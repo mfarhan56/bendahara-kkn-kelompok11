@@ -3,8 +3,8 @@ const CONFIG = {
   // Kredensial Supabase
   // Jika dikosongkan, aplikasi akan meminta pengguna mengisi melalui Setup Wizard di browser.
   // Nilai yang diisi di sini akan menjadi nilai default aplikasi.
-  SUPABASE_URL: "",
-  SUPABASE_ANON_KEY: "",
+  SUPABASE_URL: "https://oygtgwrskirmgxxofitq.supabase.co",
+  SUPABASE_ANON_KEY: "sb_publishable_YvZZbEA5KbwC84-6VSKQ-w_BoCrMVBY",
 
   // PIN Keamanan untuk mengakses mode Bendahara (menambah, mengedit, menghapus transaksi)
   DEFAULT_PIN: "1234",
