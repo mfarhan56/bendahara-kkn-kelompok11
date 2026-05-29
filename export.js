@@ -1,6 +1,24 @@
 // Exporter Library untuk Laporan Keuangan KKN
 // Terintegrasi dengan SheetJS (Excel), jsPDF + AutoTable (PDF), dan Word MIME Export
 
+// Helper to load external scripts dynamically (Lazy Loading)
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    if (document.querySelector(`script[src="${src}"]`)) {
+      resolve();
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = src;
+    script.defer = true;
+    script.onload = resolve;
+    script.onerror = () => {
+      reject(new Error(`Gagal memuat script: ${src}`));
+    };
+    document.head.appendChild(script);
+  });
+}
+
 // Helper untuk format rupiah polos tanpa Rp (untuk angka di Excel)
 function parseRawNumber(val) {
   return parseFloat(val);
@@ -16,15 +34,19 @@ function getPlaceDateString() {
 }
 
 // ==================== 1. EXPORT TO PDF ====================
-function exportPDF() {
+async function exportPDF() {
   if (filteredTransactions.length === 0) {
     showToast("Gagal Ekspor", "Tidak ada data transaksi untuk diekspor.", "warning");
     return;
   }
 
-  showToast("Mempersiapkan PDF", "Sedang menyusun laporan PDF...", "info");
+  showToast("Mempersiapkan PDF", "Mengunduh modul PDF... (Mohon tunggu)", "info");
 
   try {
+    // Lazy load jsPDF & AutoTable
+    await loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");
+    await loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js");
+
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'mm', 'a4'); // A4 Portrait
     
@@ -189,15 +211,18 @@ function exportPDF() {
 }
 
 // ==================== 2. EXPORT TO EXCEL ====================
-function exportExcel() {
+async function exportExcel() {
   if (filteredTransactions.length === 0) {
     showToast("Gagal Ekspor", "Tidak ada data transaksi untuk diekspor.", "warning");
     return;
   }
 
-  showToast("Mempersiapkan Excel", "Sedang mengekspor ke spreadsheet...", "info");
+  showToast("Mempersiapkan Excel", "Mengunduh modul Excel... (Mohon tunggu)", "info");
 
   try {
+    // Lazy load SheetJS
+    await loadScript("https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js");
+
     const kknInfo = (typeof CONFIG !== 'undefined' && CONFIG.KKN_INFO) ? CONFIG.KKN_INFO : {
       NAMA_KKN: "KKN KELOMPOK 11",
       DESA: "Kapalo Padang",

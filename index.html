@@ -20,13 +20,6 @@
   <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
 
-  <!-- SheetJS (Excel Export) CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
-
-  <!-- jsPDF & AutoTable (PDF Export) CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js" defer></script>
-
   <!-- Lucide Icons (Modern Icon Library) -->
   <script src="https://unpkg.com/lucide@latest" defer></script>
 </head>
@@ -201,16 +194,23 @@
           Daftar Riwayat Kas Keuangan KKN
         </div>
         <div class="card-actions" style="flex-wrap: wrap;">
-          <!-- Export Report Buttons -->
-          <button class="btn btn-outline" onclick="exportPDF()" title="Unduh PDF">
-            <i data-lucide="file-text" style="color: #ef4444;"></i> PDF
-          </button>
-          <button class="btn btn-outline" onclick="exportExcel()" title="Unduh Excel">
-            <i data-lucide="file-spreadsheet" style="color: #10b981;"></i> Excel
-          </button>
-          <button class="btn btn-outline" onclick="exportWord()" title="Unduh Word">
-            <i data-lucide="file-box" style="color: #3b82f6;"></i> Word
-          </button>
+          <!-- Export Report Dropdown -->
+          <div class="dropdown">
+            <button class="btn btn-outline" onclick="toggleExportDropdown(event)" title="Unduh Laporan">
+              <i data-lucide="download"></i> Ekspor <i data-lucide="chevron-down" style="width: 14px; height: 14px; margin-left: 2px;"></i>
+            </button>
+            <div id="export-dropdown-menu" class="dropdown-menu">
+              <button class="dropdown-item" onclick="exportPDF()">
+                <i data-lucide="file-text" style="color: #ef4444; width: 16px; height: 16px; margin-right: 8px;"></i> PDF (.pdf)
+              </button>
+              <button class="dropdown-item" onclick="exportExcel()">
+                <i data-lucide="file-spreadsheet" style="color: #10b981; width: 16px; height: 16px; margin-right: 8px;"></i> Excel (.xlsx)
+              </button>
+              <button class="dropdown-item" onclick="exportWord()">
+                <i data-lucide="file-box" style="color: #3b82f6; width: 16px; height: 16px; margin-right: 8px;"></i> Word (.doc)
+              </button>
+            </div>
+          </div>
 
           <!-- Add Transaction Button (Visible only to Treasurer, but displayed and locked for Viewer) -->
           <button id="btn-add-transaction" class="btn btn-primary" onclick="openTransactionModal()">

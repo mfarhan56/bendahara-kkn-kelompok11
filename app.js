@@ -918,6 +918,7 @@ function renderCharts() {
         maintainAspectRatio: false,
         plugins: {
           legend: {
+            display: window.innerWidth > 480, // Sembunyikan legenda di HP agar chart tidak tergencet
             position: 'bottom',
             labels: { color: textColor, font: { family: 'Plus Jakarta Sans', size: 11 } }
           },
@@ -1086,3 +1087,18 @@ function updateFilterCategories() {
     filterCatSelect.value = 'all';
   }
 }
+
+// Toggle Dropdown Menu Ekspor
+function toggleExportDropdown(event) {
+  if (event) event.stopPropagation();
+  const menu = document.getElementById('export-dropdown-menu');
+  if (menu) menu.classList.toggle('show');
+}
+
+// Event listener untuk menutup dropdown saat klik di luar area dropdown
+document.addEventListener('click', () => {
+  const menu = document.getElementById('export-dropdown-menu');
+  if (menu && menu.classList.contains('show')) {
+    menu.classList.remove('show');
+  }
+});
