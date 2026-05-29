@@ -919,6 +919,7 @@ function renderCharts() {
       ]
     },
     options: {
+      animation: false,
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
@@ -982,6 +983,7 @@ function renderCharts() {
         }]
       },
       options: {
+        animation: false,
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
@@ -1003,6 +1005,7 @@ function renderCharts() {
         }]
       },
       options: {
+        animation: false,
         responsive: true,
         maintainAspectRatio: false,
         plugins: {

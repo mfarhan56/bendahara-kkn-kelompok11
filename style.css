@@ -129,10 +129,8 @@ header {
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.5rem;
-  background-color: var(--bg-card-glass);
+  background-color: var(--bg-card);
   border: 1px solid var(--border-color);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
   margin-bottom: 2rem;
@@ -188,7 +186,7 @@ header {
   border-radius: var(--radius-md);
   border: 1px solid transparent;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
   white-space: nowrap;
   outline: none;
 }
@@ -440,7 +438,7 @@ header {
   border-radius: var(--radius-sm);
   color: var(--text-main);
   outline: none;
-  transition: all var(--transition-fast);
+  transition: border-color var(--transition-fast), background-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .form-control:focus {
@@ -596,9 +594,7 @@ header {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(9, 13, 22, 0.6);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background-color: rgba(9, 13, 22, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
