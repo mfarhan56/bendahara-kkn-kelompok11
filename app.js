@@ -562,10 +562,10 @@ function renderTransactionsTable() {
     if (isBendaharaMode) {
       colAksi.innerHTML = `
         <button class="btn-table-icon" onclick="editTransaction('${tx.id}')" title="Edit Transaksi">
-          <i data-lucide="edit-3" style="width: 14px; height: 14px;"></i>
+          <i data-lucide="edit-3" class="icon-table-action"></i>
         </button>
         <button class="btn-table-icon btn-delete" onclick="deleteTransaction('${tx.id}')" title="Hapus Transaksi">
-          <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+          <i data-lucide="trash-2" class="icon-table-action"></i>
         </button>
       `;
     } else {
@@ -803,15 +803,32 @@ function editTransaction(id) {
   document.getElementById('transaction-modal-title').innerText = "Edit Catatan Transaksi";
 }
 
-async function deleteTransaction(id) {
+// Global variable untuk melacak data transaksi yang akan dihapus
+let deleteTargetId = null;
+
+function deleteTransaction(id) {
   if (!isBendaharaMode) {
-    showToast("Akses Ditolak", "Izin menghapus tidak tersedia.", "error");
+    showToast("Akses Ditolak", "Silakan login sebagai Bendahara (klik tombol role di atas) terlebih dahulu.", "warning");
     return;
   }
 
-  if (!confirm("Apakah Anda yakin ingin menghapus catatan transaksi ini? Data yang terhapus tidak dapat dikembalikan.")) {
-    return;
-  }
+  deleteTargetId = id;
+  
+  // Buka modal konfirmasi kustom yang responsif
+  const modal = document.getElementById('modal-confirm-delete');
+  if (modal) modal.classList.add('active');
+}
+
+function closeDeleteConfirmModal() {
+  const modal = document.getElementById('modal-confirm-delete');
+  if (modal) modal.classList.remove('active');
+  deleteTargetId = null;
+}
+
+async function executeDeleteTransaction() {
+  if (!deleteTargetId) return;
+  const id = deleteTargetId;
+  closeDeleteConfirmModal();
 
   showToast("Menghapus", "Sedang menghapus data...", "info");
 

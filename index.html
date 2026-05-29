@@ -354,6 +354,21 @@
     </div>
   </div>
 
+  <!-- 4. Konfirmasi Hapus Modal (Custom & Cepat) -->
+  <div id="modal-confirm-delete" class="modal-overlay" style="z-index: 2100;">
+    <div class="modal-content" style="max-width: 400px; text-align: center; padding: 2rem;">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
+      <h2 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 0.5rem;">Hapus Transaksi?</h2>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+        Apakah Anda yakin ingin menghapus catatan ini? Tindakan ini tidak dapat dibatalkan.
+      </p>
+      <div style="display: flex; gap: 0.75rem; justify-content: center;">
+        <button type="button" class="btn btn-outline" onclick="closeDeleteConfirmModal()">Batal</button>
+        <button type="button" id="btn-confirm-delete-run" class="btn btn-danger" onclick="executeDeleteTransaction()">Ya, Hapus</button>
+      </div>
+    </div>
+  </div>
+
   <!-- 3. Supabase Setup Wizard Modal -->
   <div id="modal-setup-wizard" class="modal-overlay" style="z-index: 2500;">
     <div class="modal-content" style="max-width: 600px;">

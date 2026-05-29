@@ -537,7 +537,7 @@ header {
   border: 1px solid var(--border-color);
   background-color: var(--bg-app);
   color: var(--text-muted);
-  transition: all var(--transition-fast);
+  transition: all var(--transition-fast), transform var(--transition-fast);
 }
 
 .btn-table-icon:hover {
@@ -546,10 +546,26 @@ header {
   border-color: var(--primary);
 }
 
+.btn-table-icon:active {
+  transform: scale(0.9);
+  background-color: var(--primary-light);
+}
+
 .btn-table-icon.btn-delete:hover {
   background-color: var(--danger);
   color: var(--text-on-primary);
   border-color: var(--danger);
+}
+
+.btn-table-icon.btn-delete:active {
+  background-color: var(--danger-light);
+  color: var(--danger);
+}
+
+/* Default icon size inside table action buttons */
+.icon-table-action {
+  width: 14px;
+  height: 14px;
 }
 
 /* Pagination */
@@ -1020,6 +1036,21 @@ header {
   .btn {
     padding: 0.5rem 0.85rem;
     font-size: 0.8rem;
+  }
+
+  /* Optimize touch target and spacing on mobile for edit/delete buttons */
+  .btn-table-icon {
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  .actions-cell {
+    gap: 0.75rem !important;
+  }
+
+  .icon-table-action {
+    width: 18px !important;
+    height: 18px !important;
   }
 }
 
