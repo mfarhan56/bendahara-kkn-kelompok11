@@ -17,25 +17,51 @@ let loadingTimeoutId = null;
 
 // ==================== INITIALIZATION ====================
 
-document.addEventListener('DOMContentLoaded', () => {
-  // Inisialisasi Icons
-  lucide.createIcons();
-  
-  // Terapkan Tema yang Disimpan
-  initTheme();
+// Menjalankan inisialisasi aplikasi secara aman setelah DOM siap (mencegah race condition di mobile)
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}
 
-  // Muat Informasi KKN dari Config
-  loadKknInfo();
+function initApp() {
+  try {
+    // Inisialisasi Icons secara aman
+    safeCreateIcons();
+    
+    // Terapkan Tema yang Disimpan
+    initTheme();
 
-  // Muat Pilihan Kategori di Dropdown Filter & Modal Form
-  initCategories();
+    // Muat Informasi KKN dari Config
+    loadKknInfo();
 
-  // Inisialisasi format ribuan live pada input nominal
-  initAmountInputFormatter();
+    // Muat Pilihan Kategori di Dropdown Filter & Modal Form
+    initCategories();
 
-  // Periksa Koneksi Database Supabase
-  checkDatabaseConnection();
-});
+    // Inisialisasi format ribuan live pada input nominal
+    initAmountInputFormatter();
+
+    // Periksa Koneksi Database Supabase
+    checkDatabaseConnection();
+  } catch (error) {
+    console.error("Kritis: Gagal menginisialisasi aplikasi:", error);
+    showLoading(false);
+    showToast("Kesalahan Sistem", "Gagal memuat beberapa komponen aplikasi.", "error");
+  }
+}
+
+// Wrapper aman untuk membuat ikon Lucide guna menghindari crash jika CDN lambat/gagal
+function safeCreateIcons() {
+  if (typeof lucide !== 'undefined') {
+    try {
+      lucide.createIcons();
+    } catch (e) {
+      console.warn("Gagal membuat ikon Lucide:", e);
+    }
+  } else {
+    console.warn("Pustaka Lucide tidak termuat.");
+  }
+}
 
 // Load Info KKN dari CONFIG
 function loadKknInfo() {
@@ -64,7 +90,7 @@ function initTheme() {
     body.classList.remove('dark-theme');
     themeBtn.innerHTML = '<i data-lucide="moon"></i>';
   }
-  lucide.createIcons();
+  safeCreateIcons();
 
   themeBtn.addEventListener('click', () => {
     if (body.classList.contains('dark-theme')) {
@@ -76,7 +102,7 @@ function initTheme() {
       localStorage.setItem('theme', 'dark');
       themeBtn.innerHTML = '<i data-lucide="sun"></i>';
     }
-    lucide.createIcons();
+    safeCreateIcons();
     // Re-render charts to adjust text colors
     renderCharts();
   });
@@ -319,7 +345,7 @@ function updateRoleBadgeUI() {
     roleText.innerText = 'Anggota (Viewer)';
     badge.innerHTML = '<i data-lucide="user"></i> <span id="role-text">Anggota (Viewer)</span>';
   }
-  lucide.createIcons();
+  safeCreateIcons();
 }
 
 // ==================== TRANSACTIONS CRUD ====================
@@ -537,7 +563,7 @@ function renderTransactionsTable() {
   });
 
   // Re-create icons for table cell
-  lucide.createIcons();
+  safeCreateIcons();
 
   // Update Pagination Controls
   document.getElementById('pagination-info').innerText = `Menampilkan ${startIndex + 1} - ${endIndex} dari ${totalItems} transaksi`;
@@ -1021,7 +1047,7 @@ function showToast(title, message, type = 'info') {
   `;
 
   container.appendChild(toast);
-  lucide.createIcons();
+  safeCreateIcons();
 
   // Hapus setelah 4 detik
   setTimeout(() => {
