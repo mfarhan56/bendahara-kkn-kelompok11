@@ -678,7 +678,11 @@ async function saveTransaction(event) {
     return;
   }
 
-  showLoading(true, "Menyimpan data...");
+  // Tampilkan loading di dalam button simpan agar tidak memblokir seluruh layar
+  const btnSave = document.getElementById('btn-save-tx');
+  const originalBtnText = btnSave.innerHTML;
+  btnSave.disabled = true;
+  btnSave.innerHTML = '<span class="spinner-inline"></span> Menyimpan...';
 
   const transactionData = {
     tanggal,
@@ -691,12 +695,13 @@ async function saveTransaction(event) {
 
   try {
     if (isDemoMode) {
-      // Simpan di LocalStorage
+      // Simpan di LocalStorage (Offline Mode)
       let stored = JSON.parse(localStorage.getItem('demo_transactions') || '[]');
       
       if (txId) {
         // Mode Edit
         stored = stored.map(tx => tx.id === txId ? { ...tx, ...transactionData } : tx);
+        allTransactions = allTransactions.map(tx => tx.id === txId ? { ...tx, ...transactionData } : tx);
         showToast("Tersimpan", "Transaksi berhasil diperbarui (Offline).", "success");
       } else {
         // Mode Baru
@@ -705,37 +710,58 @@ async function saveTransaction(event) {
           ...transactionData
         };
         stored.unshift(newTx);
+        allTransactions.unshift(newTx);
         showToast("Tersimpan", "Transaksi baru dicatat (Offline).", "success");
       }
       localStorage.setItem('demo_transactions', JSON.stringify(stored));
+      
+      // Update UI & Close Modal secara instan
+      applyFilters();
+      closeTransactionModal();
     } else {
       // Simpan di Supabase
       if (txId) {
         // Mode Edit
-        const { error } = await supabaseClient
+        const { data, error } = await supabaseClient
           .from('transaksi')
           .update(transactionData)
-          .eq('id', txId);
+          .eq('id', txId)
+          .select();
         
         if (error) throw error;
-        showToast("Tersimpan", "Transaksi berhasil diperbarui di database.", "success");
+        
+        // Update local state instan tanpa query ulang database
+        if (data && data[0]) {
+          allTransactions = allTransactions.map(tx => tx.id === txId ? data[0] : tx);
+        }
+        showToast("Tersimpan", "Transaksi berhasil diperbarui.", "success");
       } else {
         // Mode Baru
-        const { error } = await supabaseClient
+        const { data, error } = await supabaseClient
           .from('transaksi')
-          .insert([transactionData]);
+          .insert([transactionData])
+          .select();
 
         if (error) throw error;
-        showToast("Tersimpan", "Transaksi baru dicatat di database.", "success");
-      }
-    }
 
-    closeTransactionModal();
-    loadTransactions(); // Reload data
+        // Update local state instan
+        if (data && data[0]) {
+          allTransactions.unshift(data[0]);
+        }
+        showToast("Tersimpan", "Transaksi baru dicatat.", "success");
+      }
+
+      // Update UI & Close Modal secara instan (hemat 1 query select * ke database)
+      applyFilters();
+      closeTransactionModal();
+    }
   } catch (err) {
     console.error("Gagal menyimpan transaksi:", err);
     showToast("Gagal Menyimpan", "Gagal menyimpan transaksi ke database.", "error");
-    showLoading(false);
+  } finally {
+    // Kembalikan tombol simpan
+    btnSave.disabled = false;
+    btnSave.innerHTML = originalBtnText;
   }
 }
 
@@ -771,13 +797,14 @@ async function deleteTransaction(id) {
     return;
   }
 
-  showLoading(true, "Menghapus data...");
+  showToast("Menghapus", "Sedang menghapus data...", "info");
 
   try {
     if (isDemoMode) {
       let stored = JSON.parse(localStorage.getItem('demo_transactions') || '[]');
       stored = stored.filter(tx => tx.id !== id);
       localStorage.setItem('demo_transactions', JSON.stringify(stored));
+      allTransactions = allTransactions.filter(tx => tx.id !== id);
       showToast("Terhapus", "Transaksi telah dihapus (Offline).", "success");
     } else {
       const { error } = await supabaseClient
@@ -786,14 +813,17 @@ async function deleteTransaction(id) {
         .eq('id', id);
 
       if (error) throw error;
-      showToast("Terhapus", "Transaksi berhasil dihapus dari database.", "success");
+      
+      // Update local state instan tanpa query ulang database
+      allTransactions = allTransactions.filter(tx => tx.id !== id);
+      showToast("Terhapus", "Transaksi berhasil dihapus.", "success");
     }
 
-    loadTransactions();
+    // Refresh UI secara instan dari cache lokal
+    applyFilters();
   } catch (err) {
     console.error("Gagal menghapus transaksi:", err);
     showToast("Gagal Menghapus", "Terjadi kesalahan saat menghapus data di database.", "error");
-    showLoading(false);
   }
 }
 
