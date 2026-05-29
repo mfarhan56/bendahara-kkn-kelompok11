@@ -13,6 +13,7 @@ let categoryChartInstance = null;
 
 // Langkah Setup Wizard
 let setupCurrentStep = 1;
+let loadingTimeoutId = null;
 
 // ==================== INITIALIZATION ====================
 
@@ -84,7 +85,7 @@ function initTheme() {
 // ==================== SUPABASE CONNECTION & SETUP ====================
 
 async function checkDatabaseConnection() {
-  showLoading(true, "Memeriksa konfigurasi database...");
+  showLoading(true, "Menghubungkan ke database...");
   
   let url = CONFIG.SUPABASE_URL;
   let key = CONFIG.SUPABASE_ANON_KEY;
@@ -103,7 +104,7 @@ async function checkDatabaseConnection() {
     showLoading(false);
     showToast("Mode Demo Aktif", "Menggunakan database lokal di browser Anda.", "warning");
     updateRoleBadgeUI();
-    loadTransactions();
+    loadTransactions().catch(err => console.error("Gagal memuat transaksi demo:", err));
     return;
   }
 
@@ -118,17 +119,13 @@ async function checkDatabaseConnection() {
     // Inisialisasi Supabase
     supabaseClient = supabase.createClient(url, key);
     
-    // Uji koneksi dengan mengambil 1 baris data (limit 1)
-    const { data, error } = await supabaseClient.from('transaksi').select('id').limit(1);
-    
-    if (error) throw error;
+    // Langsung ambil data transaksi (sekaligus menguji koneksi) untuk menghemat 1 network roundtrip
+    await loadTransactions();
     
     // Koneksi Sukses
     isDemoMode = false;
-    showLoading(false);
     showToast("Terhubung!", "Koneksi ke database Supabase berhasil.", "success");
     updateRoleBadgeUI();
-    loadTransactions();
   } catch (err) {
     console.error("Koneksi gagal:", err);
     showLoading(false);
@@ -353,6 +350,7 @@ async function loadTransactions() {
   } catch (err) {
     console.error("Gagal memuat transaksi:", err);
     showToast("Gagal Memuat Data", "Gagal mengambil riwayat transaksi dari database.", "error");
+    throw err; // Lempar ulang agar ditangkap pemanggil (seperti checkDatabaseConnection)
   } finally {
     showLoading(false);
   }
@@ -970,14 +968,33 @@ function formatDateChart(dateStr) {
 function showLoading(show, message = "Memuat...") {
   const loader = document.getElementById('loading-overlay');
   const text = document.getElementById('loading-text');
+  const fallback = document.getElementById('loading-fallback');
   
   if (show) {
     text.innerText = message;
     loader.style.opacity = '1';
     loader.style.pointerEvents = 'auto';
+    
+    // Sembunyikan fallback terlebih dahulu
+    if (fallback) fallback.style.display = 'none';
+    
+    // Hapus timer timeout yang sudah ada
+    if (loadingTimeoutId) clearTimeout(loadingTimeoutId);
+    
+    // Tampilkan tombol fallback ke Mode Demo jika loading > 5 detik (antispasi koneksi lambat/terputus)
+    loadingTimeoutId = setTimeout(() => {
+      if (fallback) {
+        fallback.style.display = 'block';
+      }
+    }, 5000);
   } else {
     loader.style.opacity = '0';
     loader.style.pointerEvents = 'none';
+    if (fallback) fallback.style.display = 'none';
+    if (loadingTimeoutId) {
+      clearTimeout(loadingTimeoutId);
+      loadingTimeoutId = null;
+    }
   }
 }
 

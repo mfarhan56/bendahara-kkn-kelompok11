@@ -6,24 +6,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bendahara KKN - Sistem Pencatatan Keuangan Digital</title>
 
+  <!-- Preconnect and Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
   <!-- CSS Stylesheet -->
   <link rel="stylesheet" href="style.css">
 
   <!-- Supabase JS Library CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 
   <!-- Chart.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
 
   <!-- SheetJS (Excel Export) CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
 
   <!-- jsPDF & AutoTable (PDF Export) CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js" defer></script>
 
   <!-- Lucide Icons (Modern Icon Library) -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://unpkg.com/lucide@latest" defer></script>
 </head>
 
 <body>
@@ -33,6 +38,13 @@
     <div class="spinner"></div>
     <h3 style="font-weight: 700;">Bendahara KKN</h3>
     <p id="loading-text" style="color: var(--text-muted); font-size: 0.9rem;">Menghubungkan ke database...</p>
+    <!-- Fallback Button if Connection is Slow -->
+    <div id="loading-fallback" style="margin-top: 1rem; display: none; text-align: center;">
+      <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;">Koneksi terasa lambat...</p>
+      <button class="btn btn-outline" onclick="switchToDemoMode()" style="border-color: var(--warning); color: var(--warning-text); background-color: var(--warning-light); font-size: 0.8rem; padding: 0.5rem 1rem;">
+        Gunakan Mode Demo (Offline)
+      </button>
+    </div>
   </div>
 
   <div class="app-container">
@@ -464,9 +476,9 @@ create policy "Izinkan CRUD publik dengan anon key" on transaksi for all to anon
   <div id="toast-container" class="toast-container"></div>
 
   <!-- Script files -->
-  <script src="config.js"></script>
-  <script src="export.js"></script>
-  <script src="app.js"></script>
+  <script src="config.js" defer></script>
+  <script src="export.js" defer></script>
+  <script src="app.js" defer></script>
 </body>
 
 </html>
