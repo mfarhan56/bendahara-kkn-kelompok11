@@ -111,7 +111,8 @@ function initTheme() {
 // ==================== SUPABASE CONNECTION & SETUP ====================
 
 async function checkDatabaseConnection() {
-  showLoading(true, "Menghubungkan ke database...");
+  // Sembunyikan loading overlay bawaan sesegera mungkin agar dashboard langsung tampil instan (Skeletal Loading)
+  showLoading(false);
   
   let url = CONFIG.SUPABASE_URL;
   let key = CONFIG.SUPABASE_ANON_KEY;
@@ -351,7 +352,20 @@ function updateRoleBadgeUI() {
 // ==================== TRANSACTIONS CRUD ====================
 
 async function loadTransactions() {
-  showLoading(true, "Mengambil data transaksi...");
+  // Tampilkan spinner lokal di dalam tabel transaksi alih-alih memblokir seluruh layar
+  const tbody = document.getElementById('transactions-list');
+  if (tbody) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7" style="text-align: center; padding: 3rem;">
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+            <span class="spinner-inline" style="border-top-color: var(--primary); width: 28px; height: 28px; border-width: 3px; margin: 0;"></span>
+            <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: 500;">Mengambil data dari database...</span>
+          </div>
+        </td>
+      </tr>
+    `;
+  }
 
   try {
     if (isDemoMode) {
