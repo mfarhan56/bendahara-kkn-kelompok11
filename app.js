@@ -358,12 +358,13 @@ async function loadTransactions() {
       const stored = localStorage.getItem('demo_transactions');
       allTransactions = stored ? JSON.parse(stored) : [];
     } else {
-      // Ambil dari Supabase urut tanggal terbaru
+      // Ambil dari Supabase urut tanggal terbaru (maksimal 500 transaksi terbaru untuk menghemat bandwidth internet dan kuota database Supabase)
       const { data, error } = await supabaseClient
         .from('transaksi')
         .select('*')
         .order('tanggal', { ascending: false })
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(500);
 
       if (error) throw error;
       allTransactions = data || [];
@@ -669,9 +670,10 @@ async function saveTransaction(event) {
   const tanggal = document.getElementById('tx-tanggal').value;
   const rawJumlah = document.getElementById('tx-jumlah').value.replace(/\./g, '');
   const jumlah = parseFloat(rawJumlah);
-  const kategori = document.getElementById('tx-kategori').value;
-  const petugas = document.getElementById('tx-petugas').value.trim();
-  const keterangan = document.getElementById('tx-keterangan').value.trim();
+  // Batasi input karakter agar menghemat penggunaan penyimpanan database Supabase (menghindari spam tulisan panjang)
+  const kategori = document.getElementById('tx-kategori').value.trim().substring(0, 50); 
+  const petugas = document.getElementById('tx-petugas').value.trim().substring(0, 50); 
+  const keterangan = document.getElementById('tx-keterangan').value.trim().substring(0, 250); 
 
   if (!tanggal || isNaN(jumlah) || jumlah <= 0 || !kategori || !petugas) {
     showToast("Input Salah", "Mohon isi semua data formulir dengan valid.", "warning");

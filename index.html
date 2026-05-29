@@ -412,6 +412,10 @@ create table transaksi (
   petugas text default 'Bendahara'
 );
 
+-- Buat indeks agar kueri pencarian dan pengurutan data menjadi sangat ringan
+create index idx_transaksi_tanggal on transaksi (tanggal desc);
+create index idx_transaksi_tipe on transaksi (tipe);
+
 alter table transaksi enable row level security;
 
 create policy "Izinkan baca publik" on transaksi for select to anon using (true);
